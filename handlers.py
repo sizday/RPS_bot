@@ -152,6 +152,10 @@ async def get_object(message: Message, state: FSMContext):
              "pc_score": 0,
              "player_score": 0})
     else:
+        await bot.send_message(message.from_user.id, "Your choice", reply_markup=new_round_menu)
+        await state.update_data(
+            {"pc_score": pc_score,
+             "player_score": player_score})
         await Game.entering.set()
 
 
