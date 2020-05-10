@@ -96,11 +96,6 @@ async def start_game(message: Message, state: FSMContext):
     await Game.entering.set()
 
 
-@dp.message_handler(Text(equals='New round'))
-async def new_round_text():
-    await Game.entering.set()
-
-
 @dp.message_handler(state=Game.entering)
 async def game(message: Message, state: FSMContext):
     names = ["rock", "paper", "scissors"]
@@ -157,7 +152,7 @@ async def get_object(message: Message, state: FSMContext):
              "pc_score": 0,
              "player_score": 0})
     else:
-        await bot.send_message(message.from_user.id, "Entering to new round", reply_markup=new_round_menu)
+        await Game.entering.set()
 
 
 @dp.message_handler(Text)
