@@ -1,11 +1,13 @@
 import random
 
 from aiogram import types
+from aiogram.dispatcher import FSMContext
 from aiogram.types import Message
 from aiogram.dispatcher.filters import Command, Text
 from asyncpg import Connection, Record
 from asyncpg.exceptions import UniqueViolationError
 from keyboards import rps_menu, new_round_menu
+from state import Game
 
 from load_all import bot, dp, db
 
@@ -88,14 +90,15 @@ async def register_user(message: types.Message):
 async def start_game(message: Message):
     await bot.send_message(message.from_user.id, "ROCK PAPER SCISSORS")
     await bot.send_message(message.from_user.id, "Start game!")
-    await game(message)
+    await Game.entering.set()
 
 
 @dp.message_handler(Text(equals='New round'))
-async def other_text(message: Message):
-    await game(message)
+async def other_text():
+    await Game.entering.set()
 
 
+@dp.message_handler(state=Game.entering)
 async def game(message: Message):
     names = ["rock", "paper", "scissors"]
     global player_score
@@ -107,16 +110,16 @@ async def game(message: Message):
         await bot.send_message(message.from_user.id, f"Round №{round_number}")
         round_number += 1
         await bot.send_message(message.from_user.id, "Your choice", reply_markup=rps_menu)
-        await get_object(message)
+        await Game.choosing.set()
 
 
+@dp.message_handler(state=Game.choosing)
 async def get_object(message: Message):
     global player_select
     global pc_select
     global player_score
     global pc_score
     global round_number
-    global game_value
     player_select = message.text.lower()
     if player_select != "rock" and player_select != "paper" and player_select != "scissors":
         player_select = "error"
@@ -138,22 +141,18 @@ async def get_object(message: Message):
     else:
         await bot.send_message(message.from_user.id, "Draw in this round")
     await bot.send_message(message.from_user.id, f"Current score: {player_score}:{pc_score}")
-    if pc_score == 3:
-        await bot.send_message(message.from_user.id, "Game over. I'm win, but I love you very much")
+    if pc_score == 3 or player_score == 3:
+        if pc_score == 3:
+            await bot.send_message(message.from_user.id, "Game over. I'm win, but I love you very much")
+        else:
+            await bot.send_message(message.from_user.id, "Game over. You are win. I know that you are best and beautiful!!!")
         await bot.send_sticker(message.chat.id, 'CAADAgADZgkAAnlc4gmfCor5YbYYRAI')
         pc_score = 0
         player_score = 0
         round_number = 1
-        game_value = False
-    elif player_score == 3:
-        await bot.send_message(message.from_user.id, "Game over. You are win. I know that you are best and beautiful!!!")
-        await bot.send_sticker(message.chat.id, 'CAADAgADZgkAAnlc4gmfCor5YbYYRAI')
-        pc_score = 0
-        player_score = 0
-        round_number = 1
-        game_value = False
     else:
         await bot.send_message(message.from_user.id, "Entering to new round", reply_markup=new_round_menu)
+
 
 @dp.message_handler(Text)
 async def other_text(message: Message):
