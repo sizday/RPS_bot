@@ -58,12 +58,6 @@ class DBCommands:
 
 db = DBCommands()
 
-player_score = 0
-pc_score = 0
-player_select = 0
-pc_select = 0
-round_number = 1
-
 
 @dp.message_handler(Command("start"))
 async def register_user(message: types.Message):
@@ -86,40 +80,51 @@ async def register_user(message: types.Message):
     await bot.send_message(chat_id, text)
 
 
-@dp.message_handler(Command('game'))
-async def start_game(message: Message):
+@dp.message_handler(Command('game'), state=None)
+async def start_game(message: Message, state: FSMContext):
     await bot.send_message(message.from_user.id, "ROCK PAPER SCISSORS")
     await bot.send_message(message.from_user.id, "Start game!")
+    round_number = 1
+    pc_score = 0
+    player_score = 0
+    await state.update_data(
+        {"round_number": round_number,
+         "pc_score": pc_score,
+         "player_score": player_score,
+         "pc_select": 0,
+         "player_select": 0})
     await Game.entering.set()
 
 
 @dp.message_handler(Text(equals='New round'))
-async def other_text():
+async def new_round_text():
     await Game.entering.set()
 
 
 @dp.message_handler(state=Game.entering)
-async def game(message: Message):
+async def game(message: Message, state: FSMContext):
     names = ["rock", "paper", "scissors"]
-    global player_score
-    global pc_score
-    global pc_select
-    global round_number
+    data = await state.get_data()
+    round_number = data.get("round_number")
+    pc_score = data.get("pc_score")
+    player_score = data.get("player_score")
     if pc_score < 3 and player_score < 3:
         pc_select = (names[random.randint(0, len(names)-1)])
         await bot.send_message(message.from_user.id, f"Round №{round_number}")
         round_number += 1
         await bot.send_message(message.from_user.id, "Your choice", reply_markup=rps_menu)
+        await state.update_data(
+            {"round_number": round_number,
+             "pc_select": pc_select})
         await Game.choosing.set()
 
 
 @dp.message_handler(state=Game.choosing)
-async def get_object(message: Message):
-    global player_select
-    global pc_select
-    global player_score
-    global pc_score
-    global round_number
+async def get_object(message: Message, state: FSMContext):
+    data = await state.get_data()
+    pc_score = data.get("pc_score")
+    player_score = data.get("player_score")
+    pc_select = data.get("pc_select")
     player_select = message.text.lower()
     if player_select != "rock" and player_select != "paper" and player_select != "scissors":
         player_select = "error"
@@ -147,9 +152,10 @@ async def get_object(message: Message):
         else:
             await bot.send_message(message.from_user.id, "Game over. You are win. I know that you are best and beautiful!!!")
         await bot.send_sticker(message.chat.id, 'CAADAgADZgkAAnlc4gmfCor5YbYYRAI')
-        pc_score = 0
-        player_score = 0
-        round_number = 1
+        await state.update_data(
+            {"round_number": 1,
+             "pc_score": 0,
+             "player_score": 0})
     else:
         await bot.send_message(message.from_user.id, "Entering to new round", reply_markup=new_round_menu)
 
