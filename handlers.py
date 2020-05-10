@@ -5,6 +5,7 @@ from aiogram.types import Message
 from aiogram.dispatcher.filters import Command, Text
 from asyncpg import Connection, Record
 from asyncpg.exceptions import UniqueViolationError
+import keyboards
 
 from load_all import bot, dp, db
 
@@ -80,9 +81,7 @@ async def register_user(message: types.Message):
     Сейчас в базе {count_users} человек!
     Ваш счёт: {win}:{lose}.
     """
-    user_link = f"https://t.me/{chat_id}?start={id}"
     await bot.send_message(chat_id, text)
-    await bot.send_message(chat_id, user_link)
 
 
 @dp.message_handler(Command('game'))
