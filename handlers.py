@@ -5,7 +5,7 @@ from aiogram.types import Message
 from aiogram.dispatcher.filters import Command, Text
 from asyncpg import Connection, Record
 from asyncpg.exceptions import UniqueViolationError
-import keyboards
+from keyboards import rps_menu, new_round_menu
 
 from load_all import bot, dp, db
 
@@ -106,7 +106,7 @@ async def game(message: Message):
         pc_select = (names[random.randint(0, len(names)-1)])
         await bot.send_message(message.from_user.id, f"Round №{round_number}")
         round_number += 1
-        await bot.send_message(message.from_user.id, "Your choice", reply_markup=keyboards.rps_menu)
+        await bot.send_message(message.from_user.id, "Your choice", reply_markup=rps_menu)
         await get_object(message)
 
 
@@ -153,7 +153,7 @@ async def get_object(message: Message):
         round_number = 1
         game_value = False
     else:
-        await bot.send_message(message.from_user.id, "Entering to new round", reply_markup=keyboards.new_round_menu)
+        await bot.send_message(message.from_user.id, "Entering to new round", reply_markup=new_round_menu)
 
 @dp.message_handler(Text)
 async def other_text(message: Message):
