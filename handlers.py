@@ -93,6 +93,7 @@ async def start_game(message: Message, state: FSMContext):
          "player_score": player_score,
          "pc_select": 0,
          "player_select": 0})
+    await bot.send_message(message.from_user.id, "Your choice", reply_markup=new_round_menu)
     await Game.entering.set()
 
 
