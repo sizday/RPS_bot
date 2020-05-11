@@ -20,29 +20,22 @@ async def register_user(message: types.Message):
     await bot.send_message(chat_id, text)
 
 
-@dp.message_handler(state=Game.new_game)
-async def answer_new_game(message: Message):
-    if message.text == 'Yes':
-        await bot.send_message(message.from_user.id, "New game started!")
-        await Game.yes_game.set()
-    elif message.text == 'No':
-        await bot.send_message(message.from_user.id, "Thanks for game")
-        await Game.no_game.set()
-
-
-@dp.message_handler(state=Game.no_game)
-async def end_game(state: FSMContext):
+@dp.message_handler(Text(equals='Yes'))
+async def end_game(message: Message, state: FSMContext):
+    await bot.send_message(message.from_user.id, "New game started!")
     await state.reset_state()
 
 
-@dp.message_handler(state=Game.yes_game)
-async def new_game(state: FSMContext):
+@dp.message_handler(Text(equals='No'))
+async def new_game(message: Message, state: FSMContext):
+    await bot.send_message(message.from_user.id, "Thanks for game")
     await state.update_data(
         {"round_number": 1,
          "pc_score": 0,
          "player_score": 0,
          "pc_select": 0,
          "player_select": 0})
+    await bot.send_message(message.from_user.id, "Enter for start new game", reply_markup=new_round_menu)
     await Game.entering.set()
 
 
@@ -112,7 +105,6 @@ async def get_object(message: Message, state: FSMContext):
             await bot.send_message(message.from_user.id, "Game over. You are win. I know that you are best!!!")
         await bot.send_sticker(message.chat.id, 'CAADAgADZgkAAnlc4gmfCor5YbYYRAI')
         await bot.send_message(message.from_user.id, "Do you want play again?", reply_markup=answer_keyboard)
-        await Game.new_game.set()
     else:
         await bot.send_message(message.from_user.id, "Enter for continue", reply_markup=new_round_menu)
         await state.update_data(
