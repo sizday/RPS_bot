@@ -23,14 +23,17 @@ async def register_user(message: types.Message):
 @dp.message_handler(state=Game.new_game)
 async def end_game(message: Message):
     if message.text == 'Yes':
+        await bot.send_message(message.from_user.id, "Yes")
         await Game.yes_game.set()
     elif message.text == 'No':
+        await bot.send_message(message.from_user.id, "No")
         await Game.no_game.set()
 
 
 @dp.message_handler(state=Game.no_game)
-async def no_game(message: Message):
+async def no_game(message: Message, state: FSMContext):
     await bot.send_message(message.from_user.id, "Thanks for game")
+    await state.reset_state()
 
 
 @dp.message_handler(state=Game.yes_game)
