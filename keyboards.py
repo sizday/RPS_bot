@@ -26,5 +26,6 @@ answer_keyboard = ReplyKeyboardMarkup(
             KeyboardButton(text="Yes"),
             KeyboardButton(text="No"),
         ],
-    ]
+    ],
+    resize_keyboard=True
 )

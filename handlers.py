@@ -20,12 +20,12 @@ async def register_user(message: types.Message):
     await bot.send_message(chat_id, text)
 
 
-@dp.message_handler(Text(equals='No'), state=None)
+@dp.message_handler(state=Game.no_game)
 async def end_game(message: Message):
     await bot.send_message(message.from_user.id, "Thanks for game")
 
 
-@dp.message_handler(Text(equals='Yes'), state=None)
+@dp.message_handler(state=Game.new_game)
 async def new_game(message: Message, state: FSMContext):
     await bot.send_message(message.from_user.id, "New game started!")
     await state.update_data(
