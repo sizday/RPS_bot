@@ -26,7 +26,7 @@ async def end_game(call: CallbackQuery):
     await bot.send_message(call.from_user.id, "Thanks for game")
 
 
-@dp.callback_query_handler(text_contains="yes", state=None)
+@dp.callback_query_handler(text_contains="yes", state=Game.pregame)
 async def new_game(call: CallbackQuery, state: FSMContext):
     await call.message.edit_reply_markup()
     await bot.send_message(call.from_user.id, "New game started!")
@@ -42,12 +42,14 @@ async def new_game(call: CallbackQuery, state: FSMContext):
 async def start_game(message: Message, state: FSMContext):
     await bot.send_message(message.from_user.id, "ROCK PAPER SCISSORS")
     await bot.send_message(message.from_user.id, "Start game!")
+    await bot.send_message(message.from_user.id, "Enter for start")
     await state.update_data(
         {"round_number": 1,
          "pc_score": 0,
          "player_score": 0,
          "pc_select": 0,
          "player_select": 0})
+    await bot.send_message(message.from_user.id, "Your choice", reply_markup=new_round_menu)
     await Game.entering.set()
 
 
