@@ -1,5 +1,4 @@
 from aiogram import executor
-import asyncio
 from config import admin_id
 from load_all import bot
 from database import create_db
@@ -10,7 +9,6 @@ async def on_shutdown(dp):
 
 
 async def on_startup(dp):
-    await asyncio.sleep(10)
     await create_db()
     await bot.send_message(admin_id, "Я запущен!")
 
