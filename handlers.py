@@ -20,12 +20,12 @@ async def register_user(message: types.Message):
     await bot.send_message(chat_id, text)
 
 
-@dp.message_handler(Text(equals='No'), state=Game.pregame)
+@dp.message_handler(Text(equals='No'), state=None)
 async def end_game(message: Message):
     await bot.send_message(message.from_user.id, "Thanks for game")
 
 
-@dp.message_handler(Text(equals='Yes'), state=Game.pregame)
+@dp.message_handler(Text(equals='Yes'), state=None)
 async def new_game(message: Message, state: FSMContext):
     await bot.send_message(message.from_user.id, "New game started!")
     await state.update_data(
@@ -36,7 +36,7 @@ async def new_game(message: Message, state: FSMContext):
          "player_select": 0})
 
 
-@dp.message_handler(Command('game'), state=Game.pregame)
+@dp.message_handler(Command('game'), state=None)
 async def start_game(message: Message, state: FSMContext):
     await bot.send_message(message.from_user.id, "ROCK PAPER SCISSORS")
     await bot.send_message(message.from_user.id, "Start game!")
