@@ -42,14 +42,13 @@ async def new_game(call: CallbackQuery, state: FSMContext):
 async def start_game(message: Message, state: FSMContext):
     await bot.send_message(message.from_user.id, "ROCK PAPER SCISSORS")
     await bot.send_message(message.from_user.id, "Start game!")
-    await bot.send_message(message.from_user.id, "Enter for start")
     await state.update_data(
         {"round_number": 1,
          "pc_score": 0,
          "player_score": 0,
          "pc_select": 0,
          "player_select": 0})
-    await bot.send_message(message.from_user.id, reply_markup=new_round_menu)
+    await bot.send_message(message.from_user.id, "Enter for start", reply_markup=new_round_menu)
     await Game.entering.set()
 
 
