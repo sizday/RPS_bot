@@ -3,19 +3,12 @@ version: '3.1'
 services:
   db:
     container_name: database
-    image: postgres
+    image: sameersbn/postgresql:10-2
     restart: always
     ports:
       - 5432:5432
     env_file:
       - ".env"
-
-  adminer:
-    container_name: adminer
-    image: adminer
-    restart: always
-    ports:
-      - 8080:8080
 
   tgbot:
     container_name: bot
