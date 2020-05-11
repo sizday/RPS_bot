@@ -24,10 +24,10 @@ async def register_user(message: types.Message):
 async def end_game(message: Message):
     if message.text == 'Yes':
         await bot.send_message(message.from_user.id, "Yes")
-        await Game.yes_game.set()
+        await Game.yes_game.set('yes')
     elif message.text == 'No':
         await bot.send_message(message.from_user.id, "No")
-        await Game.no_game.set()
+        await Game.no_game.set('no')
 
 
 @dp.message_handler(state=Game.no_game)
@@ -45,6 +45,7 @@ async def yes_game(message: Message, state: FSMContext):
          "player_score": 0,
          "pc_select": 0,
          "player_select": 0})
+    await Game.entering.set()
 
 
 @dp.message_handler(Command('game'), state=None)
