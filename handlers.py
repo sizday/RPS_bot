@@ -20,13 +20,13 @@ async def register_user(message: types.Message):
     await bot.send_message(chat_id, text)
 
 
-@dp.callback_query_handler(text_contains="no", state=Game.pregame)
+@dp.callback_query_handler(text_contains="no", state=None)
 async def end_game(call: CallbackQuery):
     await call.message.edit_reply_markup()
     await bot.send_message(call.from_user.id, "Thanks for game")
 
 
-@dp.callback_query_handler(text_contains="yes", state=Game.pregame)
+@dp.callback_query_handler(text_contains="yes", state=None)
 async def new_game(call: CallbackQuery, state: FSMContext):
     await call.message.edit_reply_markup()
     await bot.send_message(call.from_user.id, "New game started!")
@@ -49,7 +49,7 @@ async def start_game(message: Message, state: FSMContext):
          "player_score": 0,
          "pc_select": 0,
          "player_select": 0})
-    await bot.send_message(message.from_user.id, "Your choice", reply_markup=new_round_menu)
+    await bot.send_message(message.from_user.id, reply_markup=new_round_menu)
     await Game.entering.set()
 
 
@@ -60,6 +60,7 @@ async def game(message: Message, state: FSMContext):
     round_number = data.get("round_number")
     pc_score = data.get("pc_score")
     player_score = data.get("player_score")
+    await bot.send_message(message.from_user.id, "Test")
     if pc_score < 3 and player_score < 3:
         pc_select = (names[random.randint(0, len(names)-1)])
         await bot.send_message(message.from_user.id, f"Round №{round_number}")

@@ -1,20 +1,21 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
-rps_menu = InlineKeyboardMarkup(
-    inline_keyboard=[
+rps_menu = ReplyKeyboardMarkup(
+    keyboard=[
         [
-            InlineKeyboardButton(text="Rock"),
-            InlineKeyboardButton(text="Paper"),
-            InlineKeyboardButton(text="Scissors")
+            KeyboardButton(text="Rock"),
+            KeyboardButton(text="Paper"),
+            KeyboardButton(text="Scissors")
         ],
     ],
     resize_keyboard=True
 )
 
-new_round_menu = InlineKeyboardMarkup(
-    inline_keyboard=[
+new_round_menu = ReplyKeyboardMarkup(
+    keyboard=[
         [
-            InlineKeyboardButton(text="New round")
+            KeyboardButton(text="New round")
         ],
     ],
     resize_keyboard=True
@@ -26,6 +27,5 @@ answer_keyboard = InlineKeyboardMarkup(
             InlineKeyboardButton(text="Rock", callback_data="yes"),
             InlineKeyboardButton(text="Paper", callback_data="no"),
         ],
-    ],
-    resize_keyboard=True
+    ]
 )
