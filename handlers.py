@@ -20,16 +20,14 @@ async def register_user(message: types.Message):
     await bot.send_message(chat_id, text)
 
 
-@dp.callback_query_handler(text_contains="no", state=None)
-async def end_game(call: CallbackQuery):
-    await call.message.edit_reply_markup()
-    await bot.send_message(call.from_user.id, "Thanks for game")
+@dp.cmessage_handler(Text(equals='No'), state=Game.pregame)
+async def end_game(message: Message):
+    await bot.send_message(message.from_user.id, "Thanks for game")
 
 
-@dp.callback_query_handler(text_contains="yes", state=None)
-async def new_game(call: CallbackQuery, state: FSMContext):
-    await call.message.edit_reply_markup()
-    await bot.send_message(call.from_user.id, "New game started!")
+@dp.message_handler(Text(equals='Yes'), state=Game.pregame)
+async def new_game(message: Message, state: FSMContext):
+    await bot.send_message(message.from_user.id, "New game started!")
     await state.update_data(
         {"round_number": 1,
          "pc_score": 0,
@@ -38,7 +36,7 @@ async def new_game(call: CallbackQuery, state: FSMContext):
          "player_select": 0})
 
 
-@dp.message_handler(Command('game'), state=None)
+@dp.message_handler(Command('game'), state=Game.pregame)
 async def start_game(message: Message, state: FSMContext):
     await bot.send_message(message.from_user.id, "ROCK PAPER SCISSORS")
     await bot.send_message(message.from_user.id, "Start game!")
@@ -59,7 +57,6 @@ async def game(message: Message, state: FSMContext):
     round_number = data.get("round_number")
     pc_score = data.get("pc_score")
     player_score = data.get("player_score")
-    await bot.send_message(message.from_user.id, "Test")
     if pc_score < 3 and player_score < 3:
         pc_select = (names[random.randint(0, len(names)-1)])
         await bot.send_message(message.from_user.id, f"Round №{round_number}")
@@ -104,9 +101,9 @@ async def get_object(message: Message, state: FSMContext):
         else:
             await bot.send_message(message.from_user.id, "Game over. You are win. I know that you are best!!!")
         await bot.send_sticker(message.chat.id, 'CAADAgADZgkAAnlc4gmfCor5YbYYRAI')
-        await bot.send_message(message.from_user.id, "Your choice", reply_markup=answer_keyboard)
+        await bot.send_message(message.from_user.id, "Do you want play again?", reply_markup=answer_keyboard)
     else:
-        await bot.send_message(message.from_user.id, "Your choice", reply_markup=new_round_menu)
+        await bot.send_message(message.from_user.id, "Enter for continue", reply_markup=new_round_menu)
         await state.update_data(
             {"pc_score": pc_score,
              "player_score": player_score})
