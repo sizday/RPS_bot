@@ -1,8 +1,7 @@
-from aiogram import types, Bot
+from aiogram import types
 from gino import Gino
 from gino.schema import GinoSchemaVisitor
-from sqlalchemy import (Column, Integer, BigInteger, String,
-                        Sequence, TIMESTAMP, Boolean, JSON)
+from sqlalchemy import (Column, Integer, BigInteger, String, Sequence)
 from sqlalchemy import sql
 
 from config import db_pass, db_user, host
