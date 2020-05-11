@@ -105,6 +105,7 @@ async def get_object(message: Message, state: FSMContext):
             await bot.send_message(message.from_user.id, "Game over. You are win. I know that you are best!!!")
         await bot.send_sticker(message.chat.id, 'CAADAgADZgkAAnlc4gmfCor5YbYYRAI')
         await bot.send_message(message.from_user.id, "Do you want play again?", reply_markup=answer_keyboard)
+        await state.reset_state()
     else:
         await bot.send_message(message.from_user.id, "Enter for continue", reply_markup=new_round_menu)
         await state.update_data(
