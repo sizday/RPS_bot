@@ -2,7 +2,7 @@ import random
 
 from aiogram import types
 from aiogram.dispatcher import FSMContext
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message
 from aiogram.dispatcher.filters import Command, Text, CommandStart
 from keyboards import rps_menu, new_round_menu, answer_keyboard
 from state import Game
@@ -12,7 +12,7 @@ from load_all import bot, dp
 db = database.DBCommands()
 
 
-@dp.message_handler(Command('start'))
+@dp.message_handler(CommandStart())
 async def register_user(message: types.Message):
     chat_id = message.from_user.id
     user = await db.add_new_user()
@@ -20,7 +20,7 @@ async def register_user(message: types.Message):
     await bot.send_message(chat_id, text)
 
 
-@dp.cmessage_handler(Text(equals='No'), state=Game.pregame)
+@dp.message_handler(Text(equals='No'), state=Game.pregame)
 async def end_game(message: Message):
     await bot.send_message(message.from_user.id, "Thanks for game")
 
