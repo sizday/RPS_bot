@@ -2,98 +2,52 @@ import random
 
 from aiogram import types
 from aiogram.dispatcher import FSMContext
-from aiogram.types import Message
-from aiogram.dispatcher.filters import Command, Text
-from asyncpg import Connection, Record
-from asyncpg.exceptions import UniqueViolationError
-from keyboards import rps_menu, new_round_menu
+from aiogram.types import Message, CallbackQuery
+from aiogram.dispatcher.filters import Command, Text, CommandStart
+from keyboards import rps_menu, new_round_menu, answer_keyboard
 from state import Game
+import database
+from load_all import bot, dp
 
-from load_all import bot, dp, db
-
-
-class DBCommands:
-    pool: Connection = db
-    ADD_NEW_USER = "INSERT INTO users(chat_id, username, full_name) VALUES ($1, $2, $3) RETURNING id"
-    COUNT_USERS = "SELECT COUNT(*) FROM users"
-    GET_ID = "SELECT id FROM users WHERE chat_id = $1"
-    CHECK_LOSE = "SELECT count_loss FROM users WHERE chat_id = $1"
-    CHECK_WIN = "SELECT count_win FROM users WHERE chat_id = $1"
-
-    async def add_new_user(self):
-        user = types.User.get_current()
-
-        chat_id = user.id
-        username = user.username
-        full_name = user.full_name
-        args = chat_id, username, full_name
-
-        command = self.ADD_NEW_USER
-
-        try:
-            record_id = await self.pool.fetchval(command, *args)
-            return record_id
-        except UniqueViolationError:
-            pass
-
-    async def count_users(self):
-        record: Record = await self.pool.fetchval(self.COUNT_USERS)
-        return record
-
-    async def get_id(self):
-        command = self.GET_ID
-        user_id = types.User.get_current().id
-        return await self.pool.fetchval(command, user_id)
-
-    async def check_lose(self):
-        command = self.CHECK_LOSE
-        user_id = types.User.get_current().id
-        return await self.pool.fetchval(command, user_id)
-
-    async def check_win(self):
-        command = self.CHECK_WIN
-        user_id = types.User.get_current().id
-        return await self.pool.fetchval(command, user_id)
+db = database.DBCommands()
 
 
-db = DBCommands()
-
-
-@dp.message_handler(Command("start"))
+@dp.message_handler(CommandStart())
 async def register_user(message: types.Message):
     chat_id = message.from_user.id
-    id = await db.add_new_user()
-    count_users = await db.count_users()
-
-    text = ""
-    if not id:
-        id = await db.get_id()
-    else:
-        text += "Записал в базу! "
-
-    win = await db.check_win()
-    lose = await db.check_lose()
-    text += f"""
-    Сейчас в базе {count_users} человек!
-    Ваш счёт: {win}:{lose}.
-    """
+    user = await db.add_new_user()
+    text = f'Приветствую вас, {user.full_name}'
     await bot.send_message(chat_id, text)
 
 
-@dp.message_handler(Command('game'), state=None)
+@dp.callback_query_handler(text_contains="no", state=Game.pregame)
+async def end_game(call: CallbackQuery):
+    await call.message.edit_reply_markup()
+    await bot.send_message(call.from_user.id, "Thanks for game")
+
+
+@dp.callback_query_handler(text_contains="yes", state=Game.pregame)
+async def new_game(call: CallbackQuery, state: FSMContext):
+    await call.message.edit_reply_markup()
+    await bot.send_message(call.from_user.id, "New game started!")
+    await state.update_data(
+        {"round_number": 1,
+         "pc_score": 0,
+         "player_score": 0,
+         "pc_select": 0,
+         "player_select": 0})
+
+
+@dp.message_handler(Command('game'), state=Game.pregame)
 async def start_game(message: Message, state: FSMContext):
     await bot.send_message(message.from_user.id, "ROCK PAPER SCISSORS")
     await bot.send_message(message.from_user.id, "Start game!")
-    round_number = 1
-    pc_score = 0
-    player_score = 0
     await state.update_data(
-        {"round_number": round_number,
-         "pc_score": pc_score,
-         "player_score": player_score,
+        {"round_number": 1,
+         "pc_score": 0,
+         "player_score": 0,
          "pc_select": 0,
          "player_select": 0})
-    await bot.send_message(message.from_user.id, "Your choice", reply_markup=new_round_menu)
     await Game.entering.set()
 
 
@@ -146,12 +100,9 @@ async def get_object(message: Message, state: FSMContext):
         if pc_score == 3:
             await bot.send_message(message.from_user.id, "Game over. I'm win, but I love you very much")
         else:
-            await bot.send_message(message.from_user.id, "Game over. You are win. I know that you are best and beautiful!!!")
+            await bot.send_message(message.from_user.id, "Game over. You are win. I know that you are best!!!")
         await bot.send_sticker(message.chat.id, 'CAADAgADZgkAAnlc4gmfCor5YbYYRAI')
-        await state.update_data(
-            {"round_number": 1,
-             "pc_score": 0,
-             "player_score": 0})
+        await bot.send_message(message.from_user.id, "Your choice", reply_markup=answer_keyboard)
     else:
         await bot.send_message(message.from_user.id, "Your choice", reply_markup=new_round_menu)
         await state.update_data(

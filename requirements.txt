@@ -1,2 +1,4 @@
-asyncpg
+sqlalchemy
+gino
+python-dotenv
 aiogram
