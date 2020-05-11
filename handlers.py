@@ -12,7 +12,7 @@ from load_all import bot, dp
 db = database.DBCommands()
 
 
-@dp.message_handler(CommandStart())
+@dp.message_handler(Command('start'))
 async def register_user(message: types.Message):
     chat_id = message.from_user.id
     user = await db.add_new_user()
@@ -26,7 +26,7 @@ async def end_game(call: CallbackQuery):
     await bot.send_message(call.from_user.id, "Thanks for game")
 
 
-@dp.callback_query_handler(text_contains="yes", state=Game.pregame)
+@dp.callback_query_handler(text_contains="yes", state=None)
 async def new_game(call: CallbackQuery, state: FSMContext):
     await call.message.edit_reply_markup()
     await bot.send_message(call.from_user.id, "New game started!")
@@ -38,7 +38,7 @@ async def new_game(call: CallbackQuery, state: FSMContext):
          "player_select": 0})
 
 
-@dp.message_handler(Command('game'), state=Game.pregame)
+@dp.message_handler(Command('game'), state=None)
 async def start_game(message: Message, state: FSMContext):
     await bot.send_message(message.from_user.id, "ROCK PAPER SCISSORS")
     await bot.send_message(message.from_user.id, "Start game!")
