@@ -36,6 +36,8 @@ class DBCommands:
         new_user.user_id = user.id
         new_user.username = user.username
         new_user.full_name = user.full_name
+        new_user.win_score = 0
+        new_user.lose_score = 0
         await new_user.create()
         return new_user
 
