@@ -27,10 +27,9 @@ class DBCommands:
         user = await User.query.where(User.user_id == user_id).gino.first()
         return user
 
-    async def exist_user(self) -> str:
+    async def exist_user(self):
         user = types.User.get_current()
-        old_user = await self.get_user(user.id)
-        return str(old_user.id)
+        return await db.scalar(db.exists().where(User.id == user.id).select())
 
     async def add_new_user(self) -> User:
         user = types.User.get_current()
