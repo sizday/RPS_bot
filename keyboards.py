@@ -33,8 +33,8 @@ answer_keyboard = ReplyKeyboardMarkup(
 func_keyboard = ReplyKeyboardMarkup(
     keyboard=[
         [
-            KeyboardButton(text="Game"),
-            KeyboardButton(text="Score")
+            KeyboardButton(text="/game"),
+            KeyboardButton(text="/score")
         ],
     ],
     resize_keyboard=True
