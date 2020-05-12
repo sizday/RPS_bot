@@ -11,12 +11,9 @@ from load_all import dp, bot
 db = database.DBCommands()
 
 
-@dp.message_handler(commands=["count"])
+@dp.message_handler(user_id=admin_id, commands=["count"])
 async def count_user(message: types.Message):
     chat_id = message.from_user.id
-    await bot.send_message(chat_id, isinstance(chat_id, int))
-    await bot.send_message(chat_id, isinstance(admin_id, int))
-    if message.from_user.id == admin_id:
-        count_users = await db.count_users()
-        text = f'В базе {count_users} пользователей'
-        await bot.send_message(chat_id, text)
+    count_users = await db.count_users()
+    text = f'В базе {count_users} пользователей'
+    await bot.send_message(chat_id, text)
