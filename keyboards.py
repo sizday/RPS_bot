@@ -24,8 +24,18 @@ answer_keyboard = ReplyKeyboardMarkup(
     keyboard=[
         [
             KeyboardButton(text="Yes"),
-            KeyboardButton(text="No"),
+            KeyboardButton(text="No")
         ],
     ],
-    resize_keyboard=True, one_time_keyboard=True
+    resize_keyboard=True
+)
+
+func_keyboard = ReplyKeyboardMarkup(
+    keyboard=[
+        [
+            KeyboardButton(text="Game"),
+            KeyboardButton(text="Score")
+        ],
+    ],
+    resize_keyboard=True
 )

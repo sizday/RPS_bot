@@ -4,7 +4,7 @@ from aiogram import types
 from aiogram.dispatcher import FSMContext
 from aiogram.types import Message
 from aiogram.dispatcher.filters import Command, Text, CommandStart
-from keyboards import rps_menu, new_round_menu, answer_keyboard
+from keyboards import rps_menu, new_round_menu, answer_keyboard, func_keyboard
 from state import Game
 import database
 from load_all import bot, dp
@@ -17,7 +17,7 @@ async def register_user(message: types.Message):
     chat_id = message.from_user.id
     user = await db.add_new_user()
     text = f'Приветствую вас, {user.full_name}'
-    await bot.send_message(chat_id, text)
+    await bot.send_message(chat_id, text, reply_markup=func_keyboard)
 
 
 @dp.message_handler(commands=["score"])
@@ -29,7 +29,7 @@ async def count_user(message: types.Message):
 
 @dp.message_handler(Text(equals='No'))
 async def end_game(message: Message):
-    await bot.send_message(message.from_user.id, "Thanks for game")
+    await bot.send_message(message.from_user.id, "Thanks for game", reply_markup=func_keyboard)
 
 
 @dp.message_handler(Text(equals='Yes'))
