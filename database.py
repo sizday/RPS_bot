@@ -51,7 +51,7 @@ class DBCommands:
         win = current_user.win_score
         lose = current_user.lose_score
         score = f'Ваш счёт: {win}:{lose}\n' \
-                f'Процент побед: {round(win/win+lose*100)}%'
+                f'Процент побед: {round(win/(win+lose)*100)}%'
         return score
 
     async def add_win(self):
