@@ -30,6 +30,7 @@ async def count_user(message: types.Message):
 @dp.message_handler(Text(equals='No'))
 async def end_game(message: Message):
     await bot.send_message(message.from_user.id, "Thanks for game")
+    await message.edit_reply_markup()
 
 
 @dp.message_handler(Text(equals='Yes'))

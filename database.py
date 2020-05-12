@@ -50,7 +50,8 @@ class DBCommands:
         current_user = await self.get_user(user.id)
         win = current_user.win_score
         lose = current_user.lose_score
-        score = f'Ваш счёт: {win}:{lose}\n'
+        score = f'Ваш счёт: {win}:{lose}\n' \
+                f'Процент побед: {round(win/(win+lose)*100)}%'
         return score
 
     async def add_win(self):
@@ -62,6 +63,7 @@ class DBCommands:
         user = types.User.get_current()
         current_user = await self.get_user(user.id)
         await current_user.update(lose_score=current_user.lose_score + 1).apply()
+
 
 async def create_db():
     await db.set_bind(f'postgresql://{db_user}:{db_pass}@{host}/gino')
