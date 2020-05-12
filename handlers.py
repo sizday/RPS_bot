@@ -17,16 +17,7 @@ db = database.DBCommands()
 async def register_user(message: types.Message):
     chat_id = message.from_user.id
     user = await db.add_new_user()
-    text = f'Приветствую вас, {user.full_name}' \
-           f'Ваш id = {message.from_user.id}'
-    await bot.send_message(chat_id, text)
-
-
-@dp.message_handler(user_id=admin_id, commands=["count"])
-async def count_user(message: types.Message):
-    chat_id = message.from_user.id
-    count_users = await db.count_users()
-    text = f'В базе {count_users} пользователей'
+    text = f'Приветствую вас, {user.full_name}'
     await bot.send_message(chat_id, text)
 
 
