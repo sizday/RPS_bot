@@ -1,0 +1,4 @@
+sqlalchemy
+gino
+python-dotenv
+aiogram
