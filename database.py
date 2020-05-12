@@ -56,15 +56,12 @@ class DBCommands:
     async def add_win(self):
         user = types.User.get_current()
         current_user = await self.get_user(user.id)
-        current_user.win_score += 1
-        current_user.update()
+        await current_user.update(win_score=current_user.win_score + 1).apply()
 
     async def add_lose(self):
         user = types.User.get_current()
         current_user = await self.get_user(user.id)
-        current_user.lose_score += 1
-        current_user.update()
-
+        await current_user.update(lose_score=current_user.lose_score + 1).apply()
 
 async def create_db():
     await db.set_bind(f'postgresql://{db_user}:{db_pass}@{host}/gino')
