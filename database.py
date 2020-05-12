@@ -28,9 +28,7 @@ class DBCommands:
         return user
 
     async def exist_user(self):
-        user = types.User.get_current()
-        qwe = await db.scalar(db.exists().where(User.id == user.id).select())
-        return qwe
+        return True
 
     async def add_new_user(self) -> User:
         user = types.User.get_current()
