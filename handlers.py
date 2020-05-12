@@ -16,7 +16,14 @@ db = database.DBCommands()
 async def register_user(message: types.Message):
     chat_id = message.from_user.id
     if True:
-        await bot.send_message(chat_id, str(db.exist_user()))
+        if isinstance(db.exist_user(), int):
+            await bot.send_message(chat_id, 'int')
+        elif isinstance(db.exist_user(), str):
+            await bot.send_message(chat_id, 'str')
+        elif isinstance(db.exist_user(), bool):
+            await bot.send_message(chat_id, 'bool')
+        else:
+            await bot.send_message(chat_id, 'i dont know')
         text = f'Вы уже зарегистрированы'
         await bot.send_message(chat_id, text)
     else:
