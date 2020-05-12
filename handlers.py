@@ -27,7 +27,7 @@ async def register_user(message: types.Message):
 @dp.message_handler(commands=["score"])
 async def count_user(message: types.Message):
     chat_id = message.from_user.id
-    if db.exist_user():
+    if db.exist_user() == 'old':
         text = await db.show_score()
     else:
         text = 'Сначала надо зарегистрироваться (/start)'
@@ -54,7 +54,7 @@ async def new_game(message: Message, state: FSMContext):
 
 @dp.message_handler(Command('game'), state=None)
 async def start_game(message: Message, state: FSMContext):
-    if db.exist_user():
+    if db.exist_user() == 'old':
         await bot.send_message(message.from_user.id, "ROCK PAPER SCISSORS")
         await bot.send_message(message.from_user.id, "Start game!")
         await state.update_data(
