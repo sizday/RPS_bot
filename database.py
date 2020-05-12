@@ -30,10 +30,10 @@ class DBCommands:
     async def exist_user(self) -> str:
         user = types.User.get_current()
         old_user = await self.get_user(user.id)
-        if old_user.id >= 0:
-            return str(old_user.id)
+        if old_user:
+            return 'есть'
         else:
-            return 'low'
+            return 'нету'
 
     async def add_new_user(self) -> User:
         user = types.User.get_current()
