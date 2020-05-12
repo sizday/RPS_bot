@@ -15,15 +15,22 @@ db = database.DBCommands()
 @dp.message_handler(CommandStart())
 async def register_user(message: types.Message):
     chat_id = message.from_user.id
-    user = await db.add_new_user()
-    text = f'Приветствую вас, {user.full_name}'
-    await bot.send_message(chat_id, text, reply_markup=func_keyboard)
+    if db.exist_user():
+        text = f'Вы уже зарегистрированы'
+        await bot.send_message(chat_id, text)
+    else:
+        user = await db.add_new_user()
+        text = f'Приветствую вас, {user.full_name}'
+        await bot.send_message(chat_id, text, reply_markup=func_keyboard)
 
 
 @dp.message_handler(commands=["score"])
 async def count_user(message: types.Message):
     chat_id = message.from_user.id
-    text = await db.show_score()
+    if db.exist_user():
+        text = await db.show_score()
+    else:
+        text = 'Сначала надо зарегистрироваться (/start)'
     await bot.send_message(chat_id, text)
 
 
@@ -47,16 +54,19 @@ async def new_game(message: Message, state: FSMContext):
 
 @dp.message_handler(Command('game'), state=None)
 async def start_game(message: Message, state: FSMContext):
-    await bot.send_message(message.from_user.id, "ROCK PAPER SCISSORS")
-    await bot.send_message(message.from_user.id, "Start game!")
-    await state.update_data(
-        {"round_number": 1,
-         "pc_score": 0,
-         "player_score": 0,
-         "pc_select": 0,
-         "player_select": 0})
-    await bot.send_message(message.from_user.id, "Enter for start", reply_markup=new_round_menu)
-    await Game.entering.set()
+    if db.exist_user():
+        await bot.send_message(message.from_user.id, "ROCK PAPER SCISSORS")
+        await bot.send_message(message.from_user.id, "Start game!")
+        await state.update_data(
+            {"round_number": 1,
+             "pc_score": 0,
+             "player_score": 0,
+             "pc_select": 0,
+             "player_select": 0})
+        await bot.send_message(message.from_user.id, "Enter for start", reply_markup=new_round_menu)
+        await Game.entering.set()
+    else:
+        await bot.send_message(message.from_user.id, "Сначала надо зарегистрироваться (/start)")
 
 
 @dp.message_handler(state=Game.entering)

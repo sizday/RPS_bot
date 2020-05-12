@@ -27,6 +27,14 @@ class DBCommands:
         user = await User.query.where(User.user_id == user_id).gino.first()
         return user
 
+    async def exist_user(self):
+        user = types.User.get_current()
+        old_user = await self.get_user(user.id)
+        if old_user:
+            return True
+        else:
+            return False
+
     async def add_new_user(self) -> User:
         user = types.User.get_current()
         old_user = await self.get_user(user.id)
@@ -50,8 +58,11 @@ class DBCommands:
         current_user = await self.get_user(user.id)
         win = current_user.win_score
         lose = current_user.lose_score
-        score = f'Ваш счёт: {win}:{lose}\n' \
-                f'Процент побед: {round(win/(win+lose)*100)}%'
+        if win+lose == 0:
+            score = 'Вы еще не сыграли ни одной игры'
+        else:
+            score = f'Ваш счёт: {win}:{lose}\n' \
+                    f'Процент побед: {round(win/(win+lose)*100)}%'
         return score
 
     async def add_win(self):
