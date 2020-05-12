@@ -22,6 +22,8 @@ async def register_user(message: types.Message):
             await bot.send_message(chat_id, 'str')
         elif isinstance(db.exist_user(), bool):
             await bot.send_message(chat_id, 'bool')
+        elif db.exist_user() is None:
+            await bot.send_message(chat_id, 'bool')
         else:
             await bot.send_message(chat_id, 'i dont know')
         text = f'Вы уже зарегистрированы'
