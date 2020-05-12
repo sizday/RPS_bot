@@ -30,11 +30,11 @@ class DBCommands:
     async def exist_user(self):
         return True
 
-    async def add_new_user(self) -> User:
+    async def add_new_user(self) -> (User, str):
         user = types.User.get_current()
         old_user = await self.get_user(user.id)
         if old_user:
-            return old_user
+            return old_user, 'old'
         new_user = User()
         new_user.user_id = user.id
         new_user.username = user.username
@@ -42,7 +42,7 @@ class DBCommands:
         new_user.win_score = 0
         new_user.lose_score = 0
         await new_user.create()
-        return new_user
+        return new_user, 'new'
 
     async def count_users(self) -> int:
         total = await db.func.count(User.id).gino.scalar()

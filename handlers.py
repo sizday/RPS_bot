@@ -15,12 +15,12 @@ db = database.DBCommands()
 @dp.message_handler(CommandStart())
 async def register_user(message: types.Message):
     chat_id = message.from_user.id
-    if not db.exist_user():
+    user = await db.add_new_user()
+    if user[1] == 'old':
         text = f'Вы уже зарегистрированы'
         await bot.send_message(chat_id, text)
     else:
-        user = await db.add_new_user()
-        text = f'Приветствую вас, {user.full_name}'
+        text = f'Приветствую вас, {user[0].full_name}'
         await bot.send_message(chat_id, text, reply_markup=func_keyboard)
 
 
