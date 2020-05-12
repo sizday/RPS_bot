@@ -21,7 +21,7 @@ async def register_user(message: types.Message):
     await bot.send_message(chat_id, text)
 
 
-@dp.message_handler(user_id=admin_id, commands=["count"])
+@dp.message_handler(commands=["count"])
 async def count_user(message: types.Message):
     chat_id = message.from_user.id
     count_users = await db.count_users()
