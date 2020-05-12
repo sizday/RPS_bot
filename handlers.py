@@ -54,6 +54,7 @@ async def new_game(message: Message, state: FSMContext):
 
 @dp.message_handler(Command('game'), state=None)
 async def start_game(message: Message, state: FSMContext):
+    await bot.send_message(message.from_user.id, db.exist_user())
     if db.exist_user() == 'old':
         await bot.send_message(message.from_user.id, "ROCK PAPER SCISSORS")
         await bot.send_message(message.from_user.id, "Start game!")
