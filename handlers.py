@@ -30,7 +30,6 @@ async def count_user(message: types.Message):
 @dp.message_handler(Text(equals='No'))
 async def end_game(message: Message):
     await bot.send_message(message.from_user.id, "Thanks for game")
-    await message.edit_reply_markup()
 
 
 @dp.message_handler(Text(equals='Yes'))
@@ -113,7 +112,7 @@ async def get_object(message: Message, state: FSMContext):
             await db.add_win()
             await bot.send_message(message.from_user.id, "Game over. You are win. I know that you are best!!!")
         await bot.send_sticker(message.chat.id, 'CAADAgADZgkAAnlc4gmfCor5YbYYRAI')
-        await bot.send_message(message.from_user.id, "Do you want play again?", reply_markup=answer_keyboard)
+        await bot.reply(message.from_user.id, "Do you want play again?", reply_markup=answer_keyboard)
         await state.reset_state()
     else:
         await bot.send_message(message.from_user.id, "Enter for continue", reply_markup=new_round_menu)
