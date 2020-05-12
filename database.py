@@ -55,12 +55,12 @@ class DBCommands:
     async def add_win(self):
         user = types.User.get_current()
         current_user = await self.get_user(user.id)
-        await current_user.win_score += 1
+        current_user.win_score = await current_user.win_score + 1
 
     async def add_lose(self):
         user = types.User.get_current()
         current_user = await self.get_user(user.id)
-        await current_user.lose_score += 1
+        current_user.lose_score = await current_user.lose_score + 1
 
 
 async def create_db():
