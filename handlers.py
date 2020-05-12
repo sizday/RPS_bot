@@ -7,7 +7,6 @@ from aiogram.dispatcher.filters import Command, Text, CommandStart
 from keyboards import rps_menu, new_round_menu, answer_keyboard
 from state import Game
 import database
-from config import admin_id
 from load_all import bot, dp
 
 db = database.DBCommands()
@@ -18,6 +17,13 @@ async def register_user(message: types.Message):
     chat_id = message.from_user.id
     user = await db.add_new_user()
     text = f'Приветствую вас, {user.full_name}'
+    await bot.send_message(chat_id, text)
+
+
+@dp.message_handler(commands=["score"])
+async def count_user(message: types.Message):
+    chat_id = message.from_user.id
+    text = await db.show_score()
     await bot.send_message(chat_id, text)
 
 
@@ -100,8 +106,10 @@ async def get_object(message: Message, state: FSMContext):
     await bot.send_message(message.from_user.id, f"Current score: {player_score}:{pc_score}")
     if pc_score == 3 or player_score == 3:
         if pc_score == 3:
+            await db.add_lose()
             await bot.send_message(message.from_user.id, "Game over. I'm win, but I love you very much")
         else:
+            await db.add_win()
             await bot.send_message(message.from_user.id, "Game over. You are win. I know that you are best!!!")
         await bot.send_sticker(message.chat.id, 'CAADAgADZgkAAnlc4gmfCor5YbYYRAI')
         await bot.send_message(message.from_user.id, "Do you want play again?", reply_markup=answer_keyboard)
