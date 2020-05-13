@@ -7,6 +7,7 @@ from aiogram.dispatcher.filters import Command, Text, CommandStart
 from keyboards import rps_menu, new_round_menu, answer_keyboard, func_keyboard
 from state import Game
 import database
+import sticker_id
 from load_all import bot, dp
 
 db = database.DBCommands()
@@ -65,8 +66,8 @@ async def start_game(message: Message, state: FSMContext):
              "player_score": 0,
              "pc_select": 0,
              "player_select": 0})
-        # await bot.send_message(message.from_user.id, "Enter for start", reply_markup=new_round_menu)
-        await Game.entering.set(message=message)
+        await bot.send_message(message.from_user.id, "Enter for start", reply_markup=new_round_menu)
+        await Game.entering.set()
     else:
         await bot.send_message(message.from_user.id, "Сначала надо зарегистрироваться /start")
 
@@ -120,14 +121,17 @@ async def get_object(message: Message, state: FSMContext):
         if pc_score == 3:
             await db.add_lose()
             await bot.send_message(message.from_user.id, "Game over. I'm win, but I love you very much")
+            neg_dict = sticker_id.negative_sticker
+            await bot.send_sticker(message.chat.id, neg_dict.get(random.randint(0, len(neg_dict), 0)))
         else:
             await db.add_win()
             await bot.send_message(message.from_user.id, "Game over. You are win. I know that you are best!!!")
-        await bot.send_sticker(message.chat.id, 'CAADAgADZgkAAnlc4gmfCor5YbYYRAI')
+            pos_dict = sticker_id.positive_sticker
+            await bot.send_sticker(message.chat.id, pos_dict.get(random.randint(0, len(pos_dict), 0)))
         await bot.send_message(message.from_user.id, "Do you want play again?", reply_markup=answer_keyboard)
         await state.reset_state()
     else:
-        # await bot.send_message(message.from_user.id, "Enter for continue", reply_markup=new_round_menu)
+        await bot.send_message(message.from_user.id, "Enter for continue", reply_markup=new_round_menu)
         await state.update_data(
             {"pc_score": pc_score,
              "player_score": player_score})
