@@ -66,14 +66,13 @@ async def start_game(message: Message, state: FSMContext):
              "pc_select": 0,
              "player_select": 0})
         # await bot.send_message(message.from_user.id, "Enter for start", reply_markup=new_round_menu)
-        await Game.entering.set(state=state)
+        await Game.entering.set(message=message)
     else:
         await bot.send_message(message.from_user.id, "Сначала надо зарегистрироваться /start")
 
 
 @dp.message_handler(state=Game.entering)
-async def game(state: FSMContext):
-    user_id = types.User.get_current().id
+async def game(message: Message, state: FSMContext):
     names = ["rock", "paper", "scissors"]
     data = await state.get_data()
     round_number = data.get("round_number")
@@ -81,9 +80,9 @@ async def game(state: FSMContext):
     player_score = data.get("player_score")
     if pc_score < 3 and player_score < 3:
         pc_select = (names[random.randint(0, len(names)-1)])
-        await bot.send_message(user_id, f"Round №{round_number}")
+        await bot.send_message(message.from_user.id, f"Round №{round_number}")
         round_number += 1
-        await bot.send_message(user_id, "Your choice", reply_markup=rps_menu)
+        await bot.send_message(message.from_user.id, "Your choice", reply_markup=rps_menu)
         await state.update_data(
             {"round_number": round_number,
              "pc_select": pc_select})
