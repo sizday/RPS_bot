@@ -35,11 +35,6 @@ async def count_user(message: types.Message):
     await bot.send_message(chat_id, text)
 
 
-@dp.message_handler(commands=["exit"])
-async def count_user(message: types.Message):
-    await bot.send_message(message.from_user.id, "Thanks for game, but it don't score", reply_markup=func_keyboard)
-
-
 @dp.message_handler(Text(equals='No'))
 async def end_game(message: Message):
     await bot.send_message(message.from_user.id, "Thanks for game", reply_markup=func_keyboard)
@@ -77,7 +72,8 @@ async def start_game(message: Message, state: FSMContext):
 
 
 @dp.message_handler(state=Game.entering)
-async def game(message: Message, state: FSMContext):
+async def game(state: FSMContext):
+    user_id = types.User.get_current().id
     names = ["rock", "paper", "scissors"]
     data = await state.get_data()
     round_number = data.get("round_number")
@@ -85,9 +81,9 @@ async def game(message: Message, state: FSMContext):
     player_score = data.get("player_score")
     if pc_score < 3 and player_score < 3:
         pc_select = (names[random.randint(0, len(names)-1)])
-        await bot.send_message(message.from_user.id, f"Round №{round_number}")
+        await bot.send_message(user_id, f"Round №{round_number}")
         round_number += 1
-        await bot.send_message(message.from_user.id, "Your choice", reply_markup=rps_menu)
+        await bot.send_message(user_id, "Your choice", reply_markup=rps_menu)
         await state.update_data(
             {"round_number": round_number,
              "pc_select": pc_select})
