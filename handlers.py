@@ -35,6 +35,11 @@ async def count_user(message: types.Message):
     await bot.send_message(chat_id, text)
 
 
+@dp.message_handler(commands=["exit"])
+async def count_user(message: types.Message):
+    await bot.send_message(message.from_user.id, "Thanks for game, but it don't score", reply_markup=func_keyboard)
+
+
 @dp.message_handler(Text(equals='No'))
 async def end_game(message: Message):
     await bot.send_message(message.from_user.id, "Thanks for game", reply_markup=func_keyboard)
@@ -65,7 +70,7 @@ async def start_game(message: Message, state: FSMContext):
              "player_score": 0,
              "pc_select": 0,
              "player_select": 0})
-        await bot.send_message(message.from_user.id, "Enter for start", reply_markup=new_round_menu)
+        # await bot.send_message(message.from_user.id, "Enter for start", reply_markup=new_round_menu)
         await Game.entering.set()
     else:
         await bot.send_message(message.from_user.id, "Сначала надо зарегистрироваться /start")
@@ -127,7 +132,7 @@ async def get_object(message: Message, state: FSMContext):
         await bot.send_message(message.from_user.id, "Do you want play again?", reply_markup=answer_keyboard)
         await state.reset_state()
     else:
-        await bot.send_message(message.from_user.id, "Enter for continue", reply_markup=new_round_menu)
+        # await bot.send_message(message.from_user.id, "Enter for continue", reply_markup=new_round_menu)
         await state.update_data(
             {"pc_score": pc_score,
              "player_score": player_score})
