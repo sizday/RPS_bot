@@ -76,7 +76,7 @@ async def start_game(message: Message, state: FSMContext):
 async def game(message: Message, state: FSMContext):
     names = ["rock", "paper", "scissors"]
     data = await state.get_data()
-    round_number = data.get("round_number")
+    round_number = int(data.get("round_number"))
     pc_score = data.get("pc_score")
     player_score = data.get("player_score")
     if pc_score < 3 and player_score < 3:
