@@ -66,7 +66,7 @@ async def start_game(message: Message, state: FSMContext):
              "pc_select": 0,
              "player_select": 0})
         # await bot.send_message(message.from_user.id, "Enter for start", reply_markup=new_round_menu)
-        await Game.entering.set()
+        await Game.entering.set(state=state)
     else:
         await bot.send_message(message.from_user.id, "Сначала надо зарегистрироваться /start")
 
