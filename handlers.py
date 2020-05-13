@@ -122,12 +122,12 @@ async def get_object(message: Message, state: FSMContext):
             await db.add_lose()
             await bot.send_message(message.from_user.id, "Game over. I'm win, but I love you very much")
             neg_dict = sticker_id.negative_sticker
-            await bot.send_sticker(message.chat.id, neg_dict.get(random.randint(0, len(neg_dict), 0)))
+            await bot.send_sticker(message.chat.id, neg_dict.get(random.randint(0, len(neg_dict)), 0))
         else:
             await db.add_win()
             await bot.send_message(message.from_user.id, "Game over. You are win. I know that you are best!!!")
             pos_dict = sticker_id.positive_sticker
-            await bot.send_sticker(message.chat.id, pos_dict.get(random.randint(0, len(pos_dict), 0)))
+            await bot.send_sticker(message.chat.id, pos_dict.get(random.randint(0, len(pos_dict)), 0))
         await bot.send_message(message.from_user.id, "Do you want play again?", reply_markup=answer_keyboard)
         await state.reset_state()
     else:
